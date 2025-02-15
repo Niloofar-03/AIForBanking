@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,122 +7,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voice Authentication</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        /* General Page Style */
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #e0f7fa;
-            color: #444;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        h1, h2 {
-            color: #00796b;
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        /* Container Styles */
-        .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-
-        /* Button Styling */
-        button {
-            background-color: #00796b;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            transition: background-color 0.3s;
-            margin-bottom: 20px;
-        }
-
-        button:hover {
-            background-color: #004d40;
-        }
-
-        /* Form and Input Styling */
-        input[type="number"],
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 1rem;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        label {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #00796b;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        /* Messages */
-        p {
-            color: #00796b;
-            font-size: 1rem;
-            margin-top: 10px;
-        }
-
-        #authMessage,
-        #transactionMessage {
-            color: #d32f2f;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        /* Hide Transaction Section initially */
-        #transactionSection {
-            display: none;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Authentication Section -->
-        <div id="authSection">
-            <h1>Voice Authentication</h1>
-            <button id="authenticateBtn">Click to Authenticate</button>
-            <p id="authMessage"></p>
-        </div>
+    <h1>Voice Authentication</h1>
 
-        <!-- Transaction Section (Hidden initially) -->
-        <div id="transactionSection">
-            <h2>Transaction Page</h2>
-            <form id="transactionForm">
-                <label for="amount">Amount to Transfer:</label>
-                <input type="number" id="amount" name="amount" required><br>
-                <label for="recipient">Recipient:</label>
-                <input type="text" id="recipient" name="recipient" required><br>
-                <button type="submit">Transfer Funds</button>
-            </form>
-            <p id="transactionMessage"></p>
-            <button id="newTransactionBtn">Do Another Transaction</button>  <!-- New button to start over -->
-        </div>
+    <!-- Authentication Section -->
+    <div id="authSection">
+        <button id="authenticateBtn">Click to Authenticate</button>
+        <p id="authMessage"></p>
+    </div>
+
+    <!-- Transaction Section (Hidden initially) -->
+    <div id="transactionSection" style="display: none;">
+        <h2>Transaction Page</h2>
+        <form id="transactionForm">
+            <label for="amount">Amount to Transfer:</label>
+            <input type="number" id="amount" name="amount" required><br>
+            <label for="recipient">Recipient:</label>
+            <input type="text" id="recipient" name="recipient" required><br>
+            <button type="submit">Transfer Funds</button>
+        </form>
+        <p id="transactionMessage"></p>
+        <button id="newTransactionBtn">Do Another Transaction</button>  <!-- New button to start over -->
     </div>
 
     <script>
-        // When the button is clicked, start voice authentication
+        // When the button is clicked, send a request to start voice authentication
         $("#authenticateBtn").click(function() {
             $("#authMessage").text("Please say the Secret Key for authentication...");
             $.ajax({
@@ -128,14 +40,16 @@
                 method: 'POST',
                 success: function(response) {
                     if(response.status == "success") {
+                        // Authentication succeeded, show the transaction page
                         $("#authSection").hide();
                         $("#transactionSection").show();
                         $("#authMessage").text(response.message);
                     } else {
+                        // Authentication failed, display the error message
                         $("#authMessage").text(response.message);
                     }
                 },
-                error: function() {
+                error: function(error) {
                     $("#authMessage").text("An error occurred during authentication.");
                 }
             });
@@ -155,7 +69,7 @@
                 success: function(response) {
                     $("#transactionMessage").text(response.message);
                 },
-                error: function() {
+                error: function(error) {
                     $("#transactionMessage").text("An error occurred during the transaction.");
                 }
             });
@@ -163,11 +77,15 @@
 
         // Handle clicking the "Do Another Transaction" button
         $("#newTransactionBtn").click(function() {
-            $("#transactionForm")[0].reset();
-            $("#transactionMessage").text("");
-            $("#transactionSection").hide();
+            // Reset the transaction section
+            $("#transactionForm")[0].reset();  // Clear the form fields
+            $("#transactionMessage").text("");  // Clear the transaction message
+            $("#transactionSection").hide();  // Hide the transaction section
+
+            // Show the authentication section again
             $("#authSection").show();
         });
     </script>
 </body>
 </html>
+
