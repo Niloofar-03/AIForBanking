@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Authentication</title>
+</head>
+<body>
+    <h1>AI Voice Authentication for Banking</h1>
+
+    <button onclick="authenticateVoice()">Authenticate Voice</button>
+    <p id="authStatus"></p>
+
+    <h2>Transfer Funds</h2>
+    <label>Recipient:</label>
+    <input type="text" id="recipient" placeholder="Enter recipient name"><br><br>
+
+    <label>Amount ($):</label>
+    <input type="number" id="amount" placeholder="Enter amount"><br><br>
+
+    <button onclick="transferFunds()">Send Money</button>
+    <p id="transactionStatus"></p>
+
+    <script>
+        function authenticateVoice() {
+            fetch('/authenticate-voice')  
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('authStatus').innerText = data.message;
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
+        function transferFunds() {
+            let recipient = document.getElementById("recipient").value;
+            let amount = document.getElementById("amount").value;
+
+            fetch('/transfer', {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({recipient: recipient, amount: amount})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("transactionStatus").innerText = data.message;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
+<script>
+    function transferFunds() {
+        // Collect recipient and amount from the form inputs
+        let recipient = document.getElementById("recipient").value;
+        let amount = document.getElementById("amount").value;
+
+        // Check if the recipient and amount are provided
+        if (!recipient || !amount) {
+            document.getElementById("transactionStatus").innerText = "Recipient and amount are required.";
+            return;  // Don't proceed if data is missing
+        }
+
+        // Send a POST request to the /transfer route
+        fetch('/transfer', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ recipient: recipient, amount: amount })
+        })
+        .then(response => response.json())  // Parse the JSON response
+        .then(data => {
+            // Show success message or handle errors
+            document.getElementById("transactionStatus").innerText = data.message || data.error;
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            document.getElementById("transactionStatus").innerText = "An error occurred.";
+        });
+    }
+</script>
